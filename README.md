@@ -22,6 +22,24 @@ Atau bisa juga dijalankan langsung:
 node dist/index.js
 ```
 
+## Mengintegrasikan dengan MCP config
+
+```json
+  {
+    "mcpServers": {
+      "todo-mcp": {
+        "command": "docker",
+        "args": [
+          "run",
+          "-i",
+          "--rm",
+          "mirzaakhena/todo-mcp"
+        ] 
+      }
+    }
+  }
+```
+
 ## Fitur
 
 Server menyediakan tiga tool yang bisa digunakan:
