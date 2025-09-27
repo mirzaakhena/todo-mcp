@@ -11,17 +11,6 @@ npm install
 npm run build
 ```
 
-## Menjalankan server
-
-```bash
-npm start
-```
-
-Atau bisa juga dijalankan langsung:
-```bash
-node dist/index.js
-```
-
 ## Mengintegrasikan dengan MCP config
 
 ```json
@@ -35,6 +24,21 @@ node dist/index.js
           "--rm",
           "mirzaakhena/todo-mcp"
         ] 
+      }
+    }
+  }
+```
+
+Atau dengan cara direct via node 
+
+```json
+  {
+    "mcpServers": {
+      "todo-mcp": {
+        "command": "node",
+        "args": [
+          "/your/path/to/runnable/code/todo-mcp/dist/index.js"
+        ]
       }
     }
   }
