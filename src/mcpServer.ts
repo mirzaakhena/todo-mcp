@@ -1,12 +1,11 @@
-// Simpan tipe yang digunakan
-// Gunakan @ts-ignore untuk bypass errors
-// @ts-ignore
-const { Server } = await import("@modelcontextprotocol/sdk/server/index.js");
-// @ts-ignore
-const { StdioServerTransport } = await import("@modelcontextprotocol/sdk/server/stdio.js");
-// @ts-ignore
-const { CallToolRequestSchema, ListToolsRequestSchema } = await import("@modelcontextprotocol/sdk/types.js");
-
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+  ToolSchema,
+  type CallToolRequest,
+} from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { TodoApp } from "./todoApp.js";
@@ -19,6 +18,9 @@ const AddTodoArgsSchema = z.object({
 const ToggleTodoArgsSchema = z.object({
   id: z.string()
 });
+
+const ToolInputSchema = ToolSchema.shape.inputSchema;
+type ToolInput = z.infer<typeof ToolInputSchema>;
 
 // Server setup
 const server = new Server(
@@ -33,7 +35,7 @@ const server = new Server(
   },
 );
 
-// Inisialisasi aplikasi todo dan server
+// Inisialisasi aplikasi todo
 const todoApp = new TodoApp();
 
 // Register tools
@@ -43,24 +45,28 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: "add-todo",
         description: "Menambahkan todo baru ke dalam daftar",
-        inputSchema: zodToJsonSchema(AddTodoArgsSchema),
+        inputSchema: zodToJsonSchema(AddTodoArgsSchema) as ToolInput,
       },
       {
         name: "toggle-todo",
         description: "Mengubah status todo (complete/incomplete)",
-        inputSchema: zodToJsonSchema(ToggleTodoArgsSchema),
+        inputSchema: zodToJsonSchema(ToggleTodoArgsSchema) as ToolInput,
       },
       {
         name: "get-todos",
         description: "Mendapatkan semua todo dalam daftar",
-        inputSchema: { type: "object", properties: {}, required: [] },
+        inputSchema: {
+          type: "object",
+          properties: {},
+          required: [],
+        },
       },
     ],
   };
 });
 
 // Handle tool calls
-server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
+server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest) => {
   try {
     const { name, arguments: args } = request.params;
 
